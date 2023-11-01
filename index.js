@@ -53,6 +53,12 @@ async function run() {
       res.send(brandBanners);
     });
 
+    app.get("/brand/:brandId/products", async (req, res) => {
+      const brandId = req.params.brandId;
+      const products = await productsCollection.find({ brandId }).toArray();
+      res.send(products);
+    });
+
     app.post("/brands", async (req, res) => {
       const newBrand = req.body;
       const result = await brandCollection.insertOne(newBrand);
