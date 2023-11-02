@@ -40,8 +40,8 @@ async function run() {
     });
 
     app.get("/products", async (req, res) => {
-      const brands = await productsCollection.find().toArray();
-      res.send(brands);
+      const products = await productsCollection.find().toArray();
+      res.send(products);
     });
 
     app.get("/brand/:brandId/products", async (req, res) => {
@@ -58,12 +58,6 @@ async function run() {
       res.send(brandBanners);
     });
 
-    app.get("/brand/:brandId/products", async (req, res) => {
-      const brandId = req.params.brandId;
-      const products = await productsCollection.find({ brandId }).toArray();
-      res.send(products);
-    });
-
     app.get("/product/:productId", async (req, res) => {
       const productId = req.params.productId;
       const query = { _id: new ObjectId(productId) };
@@ -77,11 +71,36 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/brand/:brandId/products", async (req, res) => {
-      const brandId = req.params.brandId;
+    app.post("/products", async (req, res) => {
       const newProduct = req.body;
+
+      const brand = await brandCollection.findOne({
+        _id: new ObjectId(newProduct.brandId),
+      });
+
+      newProduct.brandName = brand.name;
+
       const result = await productsCollection.insertOne(newProduct);
       res.send(result);
+    });
+
+    app.put("/product/:productId", async (req, res) => {
+      const productId = req.params.productId;
+      const updatedProduct = req.body;
+
+      const brand = await brandCollection.findOne({
+        _id: new ObjectId(updatedProduct.brandId),
+      });
+
+      if (brand) {
+        updatedProduct.brandName = brand.name;
+
+        const result = await productsCollection.updateOne(
+          { _id: new ObjectId(productId) },
+          { $set: updatedProduct }
+        );
+        res.send(result);
+      }
     });
 
     await client.db("admin").command({ ping: 1 });
