@@ -34,6 +34,10 @@ async function run() {
       .db("GlowLoungeBeautyStore")
       .collection("products");
 
+    const usersCollection = client
+      .db("GlowLoungeBeautyStore")
+      .collection("users");
+
     app.get("/brands", async (req, res) => {
       const brands = await brandCollection.find().toArray();
       res.send(brands);
@@ -65,6 +69,11 @@ async function run() {
       res.send(product);
     });
 
+    app.get("/users", async (req, res) => {
+      const users = await usersCollection.find().toArray();
+      res.send(users);
+    });
+
     app.post("/brands", async (req, res) => {
       const newBrand = req.body;
       const result = await brandCollection.insertOne(newBrand);
@@ -73,7 +82,6 @@ async function run() {
 
     app.post("/products", async (req, res) => {
       const newProduct = req.body;
-
       const brand = await brandCollection.findOne({
         _id: new ObjectId(newProduct.brandId),
       });
@@ -82,6 +90,12 @@ async function run() {
 
       const result = await productsCollection.insertOne(newProduct);
       res.send(result);
+    });
+
+    app.post("/user", async (req, res) => {
+      const newUser = req.body;
+      const user = await usersCollection.insertOne(newUser);
+      res.send(user);
     });
 
     app.put("/product/:productId", async (req, res) => {
