@@ -38,6 +38,10 @@ async function run() {
       .db("GlowLoungeBeautyStore")
       .collection("users");
 
+    const cartCollection = client
+      .db("GlowLoungeBeautyStore")
+      .collection("cart");
+
     app.get("/brands", async (req, res) => {
       const brands = await brandCollection.find().toArray();
       res.send(brands);
@@ -74,6 +78,15 @@ async function run() {
       res.send(users);
     });
 
+    app.get("/cart", async (req, res) => {
+      let query = {};
+      if (req.query?.email) {
+        query = { email: req.query.email };
+      }
+      const result = await cartCollection.find(query).toArray();
+      res.send(result);
+    });
+
     app.post("/brands", async (req, res) => {
       const newBrand = req.body;
       const result = await brandCollection.insertOne(newBrand);
@@ -96,6 +109,12 @@ async function run() {
       const newUser = req.body;
       const user = await usersCollection.insertOne(newUser);
       res.send(user);
+    });
+
+    app.post("/cart", async (req, res) => {
+      const cartItem = req.body;
+      const result = await cartCollection.insertOne(cartItem);
+      res.send(result);
     });
 
     app.put("/product/:productId", async (req, res) => {
