@@ -80,8 +80,8 @@ async function run() {
 
     app.get("/cart", async (req, res) => {
       let query = {};
-      if (req.query?.email) {
-        query = { email: req.query.email };
+      if (req.query?.customerEmail) {
+        query = { email: req.query.customerEmail };
       }
       const result = await cartCollection.find(query).toArray();
       res.send(result);
@@ -134,6 +134,13 @@ async function run() {
         );
         res.send(result);
       }
+    });
+
+    app.delete("/cart/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await cartCollection.deleteOne(query);
+      res.send(result);
     });
 
     await client.db("admin").command({ ping: 1 });
