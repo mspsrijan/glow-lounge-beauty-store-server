@@ -5,7 +5,16 @@ const port = process.env.PORT || 5000;
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://glowloungebeautystore.web.app",
+      "https://glowloungebeautystore.firebaseapp.com",
+    ],
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
+  })
+);
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@glowloungebeautystore.3a1gf4x.mongodb.net/?retryWrites=true&w=majority`;
